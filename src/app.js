@@ -69,7 +69,10 @@ function locationSuccess(pos, topic) {
   keyID = newRefInstance.key(); 
   console.log(keyID);
   var watch_key= Pebble.getWatchToken(); 
-  newRefInstance.set({lat:lat, lng:lon, topic:topic, key:watch_key, timestamp:Firebase.ServerValue.TIMESTAMP}); 
+var updatedObj = {lat:lat, lng:lon, topic:topic, timestamp:Firebase.ServerValue.TIMESTAMP};
+updatedObj[watch_key] = true;
+ref.child("maps").update(updatedObj);
+      newRefInstance.update(); 
 }
 
   // When the user selects an option...
@@ -85,19 +88,25 @@ function locationSuccess(pos, topic) {
             loadingCard.show(); 
         
 var locationOptions = {
-  enableHighAccuracy: false, 
-  maximumAge: 100000, 
-  timeout: 100
+  enableHighAccuracy: true, 
+  maximumAge: 10000, 
+  timeout: 10000
 };
 
+     var ref2 = new Firebase("https://torrid-fire-7768.firebaseio.com/");
 
     // Get location updates
     navigator.geolocation.watchPosition(function (pos) {
           loadingCard.body('Take a walk :)');
-          locationSuccess (pos,f.item.title);
+            locationSuccess (pos,f.item.title);
+ //loadingCard.body(pos.lat+"\n"+pos.lng);
     }, locationError, locationOptions);
         
-        
+
+/*ref2.on("child_added", function(snapshot, prevChildKey) {
+  var newPost = snapshot.val();
+  loadingCard.body(newPost.lat+"\n"+newPost.lng);
+});       */     
         
     });
       
