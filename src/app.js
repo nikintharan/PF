@@ -4,7 +4,7 @@
  * This is where you write your app.
  */
 var Vibe = require('ui/vibe');
-
+var Light = require('ui/light');
 var UI = require('ui');
 var Vector2 = require('vector2');
 require('./firebase');  
@@ -67,8 +67,8 @@ function locationSuccess(pos, topic) {
   console.log('lat= ' + pos.coords.latitude + ' lon= ' + pos.coords.longitude);
   var lat = pos.coords.latitude;
   var lon = pos.coords.longitude;
-  lat0=lat;
-  lng0=lon;
+  lat0=lat*100;
+  lng0=lon*100;
   var newRefInstance = ref.push();
   keyID = newRefInstance.key(); 
   console.log(keyID);
@@ -81,15 +81,20 @@ ref.child(watch_key).update(updatedObj);
 
   // When the user selects an option...
   menu1.on('select', function(e) {
+    
+    Light.on();
     if (e.item.title == 'Study') {
       menu2.show();
       menu2.on('select',function(f){
       
+        
          var loadingCard = new UI.Card({
-      title:'Study',
+      title:'Study Partner',
       body:'Searching for Pals near you...'
     });
             loadingCard.show(); 
+        
+        
         
 var locationOptions = {
   enableHighAccuracy: true, 
@@ -99,27 +104,27 @@ var locationOptions = {
 
      var ref2 = new Firebase("https://torrid-fire-7768.firebaseio.com/");
 
-    // Get location updates
-    navigator.geolocation.watchPosition(function (pos) {
-          loadingCard.body('Take a walk :)');
+  navigator.geolocation.watchPosition(function (pos) {
+          loadingCard.body('An interested person is nearby. Take a walk :)');
          locationSuccess (pos,f.item.title);
     }, locationError, locationOptions);
-        
+          
 ref2.on('child_changed', function(Snapshot) {
         
   var data=Snapshot.val();
-   loadingCard.body(data.lat); 
-          var lat1 = data.lat;
-          var lng1 = data.lng;      
-        if((Math.abs(lat0-lat1)>0)&&(Math.abs(lat0-lat1)<0.000005)&&(Math.abs(lng0-lng1)>0)&&(Math.abs(lng0-lng1)<0.000005))
+ 
+          var lat1 = data.lat*100;
+          var lng1 = data.lng*100;   
+        if(((Math.abs(lat0-lat1)>0)&&(Math.abs(lat0-lat1)<200))&&(Math.abs(lng0-lng1)>0)&&(Math.abs(lng0-lng1)<4500))
         {
-         loadingCard.body('Guess you found someone! Enjoy'); 
-Vibe.vibrate('long');
+                    loadingCard.title('Study Partner Found'); 
+                    loadingCard.body('Time is precious. Please study diligently'); 
+                    Vibe.vibrate('long');
         }
         
           
   });
-        
+          
         
     });
       
