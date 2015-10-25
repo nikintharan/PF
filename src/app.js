@@ -44,29 +44,32 @@ function showMenu() {
       
       },
                {
-        title: 'IT',
+        title: 'English',
         
       },
               {
-        title: 'English',
+        title: 'Computer Science',
         
       }
              ]
     }]
   });
+var id;
 
 function locationError(err) {
   console.log('location error (' + err.code + '): ' + err.message);
 }
 
-function locationSuccess(pos, className) {
+function locationSuccess(pos, topic) {
+  console.log('Location changed!');
   console.log('lat= ' + pos.coords.latitude + ' lon= ' + pos.coords.longitude);
   var lat = pos.coords.latitude;
   var lon = pos.coords.longitude; 
   var newRefInstance = ref.push();
   keyID = newRefInstance.key(); 
   console.log(keyID);
-  newRefInstance.set({lat:lat, lng:lon, class:className}); 
+  var watch_key= Pebble.getWatchToken(); 
+  newRefInstance.set({lat:lat, lng:lon, topic:topic, key:watch_key, timestamp:Firebase.ServerValue.TIMESTAMP}); 
 }
 
   // When the user selects an option...
@@ -79,21 +82,23 @@ function locationSuccess(pos, className) {
       title:'Study With',
       body:'Searching nearby...'
     });
-    
-    var locationOptions = {
-       enableHighAccuracy: true, 
-       maximumAge: 10000, 
-       timeout: 10000
-    };
-      
-    loadingCard.show(); 
-    navigator.geolocation.getCurrentPosition(function (pos) {
-      loadingCard.body('Take a walk :)');
-      locationSuccess (pos, Pebble.getWatchToken());
-        locationSuccess (pos, f.item.title);
-      }, locationError, locationOptions);
-      
-      
+            loadingCard.show(); 
+        
+var locationOptions = {
+  enableHighAccuracy: false, 
+  maximumAge: 100000, 
+  timeout: 100
+};
+
+
+    // Get location updates
+    navigator.geolocation.watchPosition(function (pos) {
+          loadingCard.body('Take a walk :)');
+          locationSuccess (pos,f.item.title);
+    }, locationError, locationOptions);
+        
+        
+        
     });
       
     } else {
