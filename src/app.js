@@ -3,6 +3,7 @@
  *
  * This is where you write your app.
  */
+var Vibe = require('ui/vibe');
 
 var UI = require('ui');
 var Vector2 = require('vector2');
@@ -55,8 +56,9 @@ function showMenu() {
     }]
   });
 var id;
+var lat0,lng0;
 
-function locationError(err) {
+  function locationError(err) {
   console.log('location error (' + err.code + '): ' + err.message);
 }
 
@@ -64,7 +66,9 @@ function locationSuccess(pos, topic) {
   console.log('Location changed!');
   console.log('lat= ' + pos.coords.latitude + ' lon= ' + pos.coords.longitude);
   var lat = pos.coords.latitude;
-  var lon = pos.coords.longitude; 
+  var lon = pos.coords.longitude;
+  lat0=lat;
+  lng0=lon;
   var newRefInstance = ref.push();
   keyID = newRefInstance.key(); 
   console.log(keyID);
@@ -82,8 +86,8 @@ ref.child(watch_key).update(updatedObj);
       menu2.on('select',function(f){
       
          var loadingCard = new UI.Card({
-      title:'Study With',
-      body:'Searching nearby...'
+      title:'Study',
+      body:'Searching for Pals near you...'
     });
             loadingCard.show(); 
         
@@ -98,15 +102,24 @@ var locationOptions = {
     // Get location updates
     navigator.geolocation.watchPosition(function (pos) {
           loadingCard.body('Take a walk :)');
-            locationSuccess (pos,f.item.title);
- //loadingCard.body(pos.lat+"\n"+pos.lng);
+         locationSuccess (pos,f.item.title);
     }, locationError, locationOptions);
         
-
-/*ref2.on("child_added", function(snapshot, prevChildKey) {
-  var newPost = snapshot.val();
-  loadingCard.body(newPost.lat+"\n"+newPost.lng);
-});       */     
+ref2.on('child_changed', function(Snapshot) {
+        
+  var data=Snapshot.val();
+   loadingCard.body(data.lat); 
+          var lat1 = data.lat;
+          var lng1 = data.lng;      
+        if((Math.abs(lat0-lat1)>0)&&(Math.abs(lat0-lat1)<0.000005)&&(Math.abs(lng0-lng1)>0)&&(Math.abs(lng0-lng1)<0.000005))
+        {
+         loadingCard.body('Guess you found someone! Enjoy'); 
+Vibe.vibrate('long');
+        }
+        
+          
+  });
+        
         
     });
       
@@ -120,7 +133,6 @@ var locationOptions = {
   // Finally make sure the menu is set to show.
   menu1.show();
 }
-
 
 showMenu(); 
 
