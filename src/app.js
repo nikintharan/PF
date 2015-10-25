@@ -71,7 +71,7 @@ function locationSuccess(pos, topic) {
   var watch_key= Pebble.getWatchToken(); 
 var updatedObj = {lat:lat, lng:lon, topic:topic, timestamp:Firebase.ServerValue.TIMESTAMP};
 updatedObj[watch_key] = true;
-ref.child("maps").update(updatedObj);
+ref.child(watch_key).update(updatedObj);
       newRefInstance.update(); 
 }
 
