@@ -12,6 +12,11 @@ require('./firebase');
 var ref = new Firebase('https://torrid-fire-7768.firebaseio.com/');
 var keyID;
 
+var card = new UI.Card({
+  title: 'PalFinder',
+  body: 'What would you like to do? Click to begin',
+  scrollable: true
+});
 
 function showMenu() {
   // We create a simple menu with a few options
@@ -79,7 +84,10 @@ ref.child(watch_key).update(updatedObj);
       newRefInstance.update(); 
 }
 
-  // When the user selects an option...
+  card.show();
+card.on('click', function(g) {
+ 
+   // When the user selects an option...
   menu1.on('select', function(e) {
     
     Light.on();
@@ -137,6 +145,12 @@ ref2.on('child_changed', function(Snapshot) {
    
   // Finally make sure the menu is set to show.
   menu1.show();
+  
+  
+  
+});
+  
+ 
 }
 
 showMenu(); 
